@@ -18,6 +18,7 @@ class CProcess_demoDlg : public CDialog
 {
 // Construction
 public:
+	void InitSerialPort();
 	void InitButtonDisplay();
 	void InitCarInfo();
 	void UpdateCarInfo();

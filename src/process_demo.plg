@@ -6,25 +6,40 @@
 --------------------Configuration: process_demo - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\root\AppData\Local\Temp\RSPE586.tmp" with contents
+Creating command line "rc.exe /l 0x804 /fo"Debug/process_demo.res" /d "_DEBUG" /d "_AFXDLL" "D:\搜狗高速下载\process_demo-master\src\process_demo.rc"" 
+Creating temporary file "C:\Users\root\AppData\Local\Temp\RSPCC0F.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/process_demo.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
-"D:\kading_project\process_demo\process_demoDlg.cpp"
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/process_demo.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\搜狗高速下载\process_demo-master\src\MyButton.cpp"
+"D:\搜狗高速下载\process_demo-master\src\process_demo.cpp"
+"D:\搜狗高速下载\process_demo-master\src\process_demoDlg.cpp"
 ]
-Creating command line "cl.exe @C:\Users\root\AppData\Local\Temp\RSPE586.tmp" 
-Creating temporary file "C:\Users\root\AppData\Local\Temp\RSPE587.tmp" with contents
+Creating command line "cl.exe @C:\Users\root\AppData\Local\Temp\RSPCC0F.tmp" 
+Creating temporary file "C:\Users\root\AppData\Local\Temp\RSPCC10.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/process_demo.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\搜狗高速下载\process_demo-master\src\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\root\AppData\Local\Temp\RSPCC10.tmp" 
+Creating temporary file "C:\Users\root\AppData\Local\Temp\RSPCC11.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/process_demo.pdb" /debug /machine:I386 /out:"Debug/process_demo.exe" /pdbtype:sept 
-.\Debug\process_demo.obj
-.\Debug\process_demoDlg.obj
-.\Debug\StdAfx.obj
-.\Debug\process_demo.res
-.\Debug\MyButton.obj
+".\Debug\MyButton.obj"
+".\Debug\process_demo.obj"
+".\Debug\process_demoDlg.obj"
+".\Debug\StdAfx.obj"
+".\Debug\process_demo.res"
 ]
-Creating command line "link.exe @C:\Users\root\AppData\Local\Temp\RSPE587.tmp"
+Creating command line "link.exe @C:\Users\root\AppData\Local\Temp\RSPCC11.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
+StdAfx.cpp
+Compiling...
+MyButton.cpp
+process_demo.cpp
 process_demoDlg.cpp
+Generating Code...
 Linking...
 
 

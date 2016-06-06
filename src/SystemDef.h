@@ -25,6 +25,8 @@ typedef struct CarInfo
 	int		carTimeSec;		/* 车辆时间 */
 
 	int		carCurState;	/* 车辆状态 */
+
+	int		carOnline;		/* 在线状态 */
 }CarInfo;
 
 typedef struct SystemDef
