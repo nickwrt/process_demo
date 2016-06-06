@@ -723,13 +723,14 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
 					}
 					else
 					{
+						m_RfidInfo[i].lasttick  = m_RfidInfo[i].curtick;
+
 						tsp = (int)((tick - m_RfidInfo[i].curtick)/1000);
 
 						if(tsp >= 3)
 						{
 							/* 连续3秒钟未探测到车辆信号，视为车辆离开出发点 */
-							m_gCarInfo[i].carOnline = 0;
-							m_RfidInfo[i].lasttick  = m_RfidInfo[i].curtick;
+							m_gCarInfo[i].carOnline = 0;							
 						}
 					}
 				}
