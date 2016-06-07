@@ -23,6 +23,7 @@ public:
 	void InitCarInfo();
 	void UpdateCarInfo();
 	void LoadConfig();
+	void UpdatePosition(int num);
 	CProcess_demoDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
@@ -40,6 +41,8 @@ public:
 	CMyButton   m_Btn[MAX_CAR_CNT];
 	CarInfo		m_gCarInfo[MAX_CAR_CNT];
 	SystemDef	m_gSystemInfo;
+
+	int			m_gGameFlag;
 // Implementation
 protected:
 	HICON m_hIcon;
@@ -52,6 +55,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnButtonUpdate();
+	afx_msg void OnCheck1();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

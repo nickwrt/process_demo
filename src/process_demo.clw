@@ -51,7 +51,7 @@ Control4=IDOK,button,1342373889
 [DLG:IDD_PROCESS_DEMO_DIALOG]
 Type=1
 Class=CProcess_demoDlg
-ControlCount=27
+ControlCount=28
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_LIST1,listbox,1352728835
@@ -79,6 +79,7 @@ Control24=IDC_CAR_LABEL11,static,1342308353
 Control25=IDC_BUTTON11,button,1342242816
 Control26=IDC_CAR_LABEL12,static,1342308353
 Control27=IDC_BUTTON12,button,1342242816
+Control28=IDC_CHECK1,button,1342242819
 
 [CLS:CMyButton]
 Type=0

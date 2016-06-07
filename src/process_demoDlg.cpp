@@ -551,6 +551,7 @@ BEGIN_MESSAGE_MAP(CProcess_demoDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON11, OnButtonUpdate)
 	ON_BN_CLICKED(IDC_BUTTON12, OnButtonUpdate)
 	ON_BN_CLICKED(IDC_BUTTON1, OnButtonUpdate)
+	ON_BN_CLICKED(IDC_CHECK1, OnCheck1)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -650,6 +651,8 @@ void CProcess_demoDlg::LoadConfig()
 	char buf[100] = {0};
 	CString cs;
 
+	m_gGameFlag = 0;
+
 	m_gSystemInfo.carCacType = CAC_BY_CYCLE;
 
 	i = GetPrivateProfileString("系统配置","赛道计量方式","计圈",buf,sizeof(buf),SYSTEM_PROFILE);
@@ -711,6 +714,10 @@ void CProcess_demoDlg::LoadConfig()
 	}
 }
 
+void CProcess_demoDlg::UpdatePosition(int num)
+{
+}
+
 void CProcess_demoDlg::OnTimer(UINT nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
@@ -725,6 +732,8 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
 		{
 			if(!m_gCarInfo[i].carName.IsEmpty() && m_gCarInfo[i].carCurState > CAR_ST_INIT)
 			{
+				m_gCarInfo[i].carTimeSec ++;
+
 				if(m_RfidInfo[i].curtick > 0)
 				{
 					if(m_gCarInfo[i].carOnline == 0 && m_RfidInfo[i].curtick > m_RfidInfo[i].lasttick)
@@ -734,8 +743,10 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
                         if(m_RfidInfo[i].lasttick > 0)
                         {
                             m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt]  = (int)((tick - m_RfidInfo[i].lasttick)/1000);
-                            m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt] += m_gSystemInfo.carSpeedAdj；  /* 修正误差 */
-                            m_gCarInfo[i].carCycleCnt ++; /* 计圈加一 */                            
+                            m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt] += m_gSystemInfo.carSpeedAdj;  /* 修正误差 */
+                            m_gCarInfo[i].carCycleCnt ++; /* 计圈加一 */ 
+
+							UpdatePosition(i);
                         }
 					}
 					else
@@ -750,9 +761,7 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
 							m_gCarInfo[i].carOnline = 0;							
 						}
 					}
-				}
-
-				m_gCarInfo[i].carTimeSec ++;
+				}					
 
 				if(++m_gCarInfo[i].carTimeSec >= m_gSystemInfo.carMaxTime || m_gCarInfo[i].carCycleCnt >= m_gSystemInfo.carMaxCycle)
 				{
@@ -771,29 +780,54 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
 void CProcess_demoDlg::UpdateCarInfo()
 {
 	CString cs;
+	int m_tmpCarInfo[MAX_CAR_CNT] = {0};
 
-	for(int i=0; i<MAX_CAR_CNT; i++)
+	if(m_gGameFlag == 0)	
 	{
-		if(!m_gCarInfo[i].carName.IsEmpty())
+		/* 非竞赛模式,只需显示车辆信息 */
+		for(int i=0; i<MAX_CAR_CNT; i++)
 		{
-			this->GetDlgItem(IDC_CAR_LABEL1 + i)->SetWindowText(m_gCarInfo[i].carName);
-
-			cs.Format("");
-			cs.Format("%d圈 %d秒 圈速%d秒", m_gCarInfo[i].carCycleCnt, /*(int)(m_gCarInfo[i].carTimeSec)/60, (int)m_gCarInfo[i].carTimeSec%60*/ m_gCarInfo[i].carTimeSec,  m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt-1] );
-			/*
-			if(m_gSystemInfo.carCacType == CAC_BY_CYCLE)
+			if(!m_gCarInfo[i].carName.IsEmpty())
 			{
-				cs.Format("%d圈", m_gCarInfo[i].carCycleCnt);
-			}
-			else if(m_gSystemInfo.carCacType == CAC_BY_TIME)
-			{
-				cs.Format("%d分钟%d秒", (int)(m_gCarInfo[i].carTimeSec)/60, (int)m_gCarInfo[i].carTimeSec%60);
-			}
-			*/
-			this->GetDlgItem(IDC_BUTTON1 + i)->SetWindowText(cs);
+				this->GetDlgItem(IDC_CAR_LABEL1 + i)->SetWindowText(m_gCarInfo[i].carName);
 
-			this->GetDlgItem(IDC_CAR_LABEL1 + i)->ShowWindow(TRUE);
-			this->GetDlgItem(IDC_BUTTON1 + i)->ShowWindow(TRUE);
+				cs.Format("");
+				cs.Format("%d圈%d秒 圈速%d秒", m_gCarInfo[i].carCycleCnt, /*(int)(m_gCarInfo[i].carTimeSec)/60, (int)m_gCarInfo[i].carTimeSec%60*/ m_gCarInfo[i].carTimeSec,  (m_gCarInfo[i].carCycleCnt > 0) ? m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt-1] : 0);
+				/*
+				if(m_gSystemInfo.carCacType == CAC_BY_CYCLE)
+				{
+					cs.Format("%d圈", m_gCarInfo[i].carCycleCnt);
+				}
+				else if(m_gSystemInfo.carCacType == CAC_BY_TIME)
+				{
+					cs.Format("%d分钟%d秒", (int)(m_gCarInfo[i].carTimeSec)/60, (int)m_gCarInfo[i].carTimeSec%60);
+				}
+				*/
+				this->GetDlgItem(IDC_BUTTON1 + i)->SetWindowText(cs);
+
+				this->GetDlgItem(IDC_CAR_LABEL1 + i)->ShowWindow(TRUE);
+				this->GetDlgItem(IDC_BUTTON1 + i)->ShowWindow(TRUE);
+			}
+		}
+	}
+	else if(m_gGameFlag == 1)
+	{
+		/* 竞赛模式,按时长进行排序 */
+		for(int i=0; i<MAX_CAR_CNT; i++)
+		{
+			if(!m_gCarInfo[i].carName.IsEmpty())
+			{
+				
+			}
+		}
+
+		for(int i=0; i<MAX_CAR_CNT; i++)
+		{
+			if(!m_gCarInfo[i].carName.IsEmpty())
+			{
+				/* 位置i应该显示时长大于0而且圈数大于0和排名在i的车辆信息 */
+
+			}
 		}
 	}
 }
@@ -814,32 +848,70 @@ void CProcess_demoDlg::OnButtonUpdate()
 
 	int id = this->GetFocus()->GetDlgCtrlID() - IDC_BUTTON1;	
 
-	if(id >= 0 && id < MAX_CAR_CNT)
+	if(m_gGameFlag == 0)	
 	{
-		m_gCarInfo[id].carCycleCnt = 0;
-		m_gCarInfo[id].carTimeSec  = 0;
-		m_gCarInfo[id].carOnline   = 0;
-
-		m_RfidInfo[id].curtick = m_RfidInfo[id].lasttick = 0;
-
-		m_gCarInfo[id].carCurState = CAR_ST_RUNNING;
-		m_Btn[id].SetUpColor(RGB(0,0,255));
-
-		cs.Format("");
-		if(m_gSystemInfo.carCacType == CAC_BY_CYCLE)
+		/* 非竞赛模式,只需复位单台车辆 */
+		if(id >= 0 && id < MAX_CAR_CNT)
 		{
-			cs.Format("%d圈", m_gCarInfo[id].carCycleCnt);
+			m_gCarInfo[id].carCycleCnt = 0;
+			m_gCarInfo[id].carTimeSec  = 0;
+			m_gCarInfo[id].carOnline   = 0;
+
+			for(k=0; k<MAX_CYCLE_FORSPEED; k++)
+			{
+				m_gCarInfo[id].carCycleSpeed[k] = 0;
+			}
+
+			m_RfidInfo[id].curtick = m_RfidInfo[id].lasttick = 0;
+
+			m_gCarInfo[id].carCurState = CAR_ST_RUNNING;
+			m_Btn[id].SetUpColor(RGB(0,0,255));
+
+			cs.Format("");
+			if(m_gSystemInfo.carCacType == CAC_BY_CYCLE)
+			{
+				cs.Format("%d圈", m_gCarInfo[id].carCycleCnt);
+			}
+			else if(m_gSystemInfo.carCacType == CAC_BY_TIME)
+			{
+				cs.Format("%d分钟%d秒", (int)(m_gCarInfo[id].carTimeSec)/60, (int)m_gCarInfo[id].carTimeSec%60);
+			}
+			this->GetDlgItem(IDC_BUTTON1 + id)->SetWindowText(cs);
 		}
-		else if(m_gSystemInfo.carCacType == CAC_BY_TIME)
+	}
+	else if(m_gGameFlag == 1)
+	{
+		/* 竞赛模式,复位所有车辆 */
+		for(id = 0; id < MAX_CAR_CNT; id++)
 		{
-			cs.Format("%d分钟%d秒", (int)(m_gCarInfo[id].carTimeSec)/60, (int)m_gCarInfo[id].carTimeSec%60);
+			if(!m_gCarInfo[id].carName.IsEmpty())
+			{
+				m_gCarInfo[id].carCycleCnt = 0;
+				m_gCarInfo[id].carTimeSec  = 0;
+				m_gCarInfo[id].carOnline   = 0;
+
+				for(k=0; k<MAX_CYCLE_FORSPEED; k++)
+				{
+					m_gCarInfo[id].carCycleSpeed[k] = 0;
+				}
+
+				m_RfidInfo[id].curtick = m_RfidInfo[id].lasttick = 0;
+
+				m_gCarInfo[id].carCurState = CAR_ST_RUNNING;
+				m_Btn[id].SetUpColor(RGB(0,0,255));
+
+				cs.Format("");
+				if(m_gSystemInfo.carCacType == CAC_BY_CYCLE)
+				{
+					cs.Format("%d圈", m_gCarInfo[id].carCycleCnt);
+				}
+				else if(m_gSystemInfo.carCacType == CAC_BY_TIME)
+				{
+					cs.Format("%d分钟%d秒", (int)(m_gCarInfo[id].carTimeSec)/60, (int)m_gCarInfo[id].carTimeSec%60);
+				}
+				this->GetDlgItem(IDC_BUTTON1 + id)->SetWindowText(cs);
+			}
 		}
-		this->GetDlgItem(IDC_BUTTON1 + id)->SetWindowText(cs);
-        
-        for(k=0; k<MAX_CYCLE_FORSPEED; k++)
-        {
-            m_gCarInfo[id].carCycleSpeed[k] = 0;
-        }
 	}
 }
 
@@ -863,4 +935,13 @@ void CProcess_demoDlg::InitSerialPort()
 	}
 
 	comThreadCreate();
+}
+
+void CProcess_demoDlg::OnCheck1() 
+{
+	static int flag=0;
+
+	flag = 1 - flag;
+
+	m_gGameFlag = flag;
 }
