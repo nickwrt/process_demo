@@ -646,7 +646,7 @@ HCURSOR CProcess_demoDlg::OnQueryDragIcon()
 
 void CProcess_demoDlg::LoadConfig()
 {
-	int i,j;
+	int i,j,k;
 	char buf[100] = {0};
 	CString cs;
 
@@ -670,6 +670,13 @@ void CProcess_demoDlg::LoadConfig()
 	if(i > 0 && strlen(buf) > 0)
 	{
 		m_gSystemInfo.carMaxCycle = (int)atol(buf);
+	}
+    
+    m_gSystemInfo.carSpeedAdj = 0;
+	i = GetPrivateProfileString("系统配置","单圈圈速修正时间","0",buf,sizeof(buf),SYSTEM_PROFILE);
+	if(i > 0 && strlen(buf) > 0)
+	{
+		m_gSystemInfo.carSpeedAdj = (int)atol(buf);
 	}
 
 	for(i=0; i<MAX_CAR_CNT; i++)
@@ -695,6 +702,11 @@ void CProcess_demoDlg::LoadConfig()
 			m_gCarInfo[i].carCurState = CAR_ST_INIT;
 
 			m_RfidInfo[i].rfid        = (int)atol(buf);
+            
+            for(k=0; k<MAX_CYCLE_FORSPEED; k++)
+            {
+                m_gCarInfo[i].carCycleSpeed[k] = 0;
+            }
 		}
 	}
 }
@@ -721,7 +733,9 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
                         
                         if(m_RfidInfo[i].lasttick > 0)
                         {
-                            m_gCarInfo[i].carCycleCnt ++; /* 计圈加一 */
+                            m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt]  = (int)((tick - m_RfidInfo[i].lasttick)/1000);
+                            m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt] += m_gSystemInfo.carSpeedAdj；  /* 修正误差 */
+                            m_gCarInfo[i].carCycleCnt ++; /* 计圈加一 */                            
                         }
 					}
 					else
@@ -765,7 +779,7 @@ void CProcess_demoDlg::UpdateCarInfo()
 			this->GetDlgItem(IDC_CAR_LABEL1 + i)->SetWindowText(m_gCarInfo[i].carName);
 
 			cs.Format("");
-			cs.Format("%d圈 %d分钟%d秒 ", m_gCarInfo[i].carCycleCnt, (int)(m_gCarInfo[i].carTimeSec)/60, (int)m_gCarInfo[i].carTimeSec%60);
+			cs.Format("%d圈 %d秒 圈速%d秒", m_gCarInfo[i].carCycleCnt, /*(int)(m_gCarInfo[i].carTimeSec)/60, (int)m_gCarInfo[i].carTimeSec%60*/ m_gCarInfo[i].carTimeSec,  m_gCarInfo[i].carCycleSpeed[m_gCarInfo[i].carCycleCnt-1] );
 			/*
 			if(m_gSystemInfo.carCacType == CAC_BY_CYCLE)
 			{
@@ -795,6 +809,7 @@ void CProcess_demoDlg::InitCarInfo()
 
 void CProcess_demoDlg::OnButtonUpdate() 
 {
+    int k;
 	CString cs;
 
 	int id = this->GetFocus()->GetDlgCtrlID() - IDC_BUTTON1;	
@@ -820,6 +835,11 @@ void CProcess_demoDlg::OnButtonUpdate()
 			cs.Format("%d分钟%d秒", (int)(m_gCarInfo[id].carTimeSec)/60, (int)m_gCarInfo[id].carTimeSec%60);
 		}
 		this->GetDlgItem(IDC_BUTTON1 + id)->SetWindowText(cs);
+        
+        for(k=0; k<MAX_CYCLE_FORSPEED; k++)
+        {
+            m_gCarInfo[id].carCycleSpeed[k] = 0;
+        }
 	}
 }
 

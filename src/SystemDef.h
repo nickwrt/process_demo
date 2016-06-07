@@ -8,6 +8,8 @@
 #define MAX_CYCLE_CNT		5
 #define MAX_TIME_CNT		5*60
 
+#define MAX_CYCLE_FORSPEED  256
+
 #define CAC_BY_CYCLE		1
 #define CAC_BY_TIME			2
 
@@ -17,16 +19,18 @@
 
 typedef struct CarInfo
 {
-	CString	carName;		/* 车辆名称 */
-	CString carSeqIDstr;	/* 车辆rfid */
-	int		carSeqIDint;	/* 车辆rfid */
+	CString	carName;		                        /* 车辆名称 */
+	CString carSeqIDstr;	                        /* 车辆rfid */
+	int		carSeqIDint;	                        /* 车辆rfid */
 
-	int		carCycleCnt;	/* 车辆圈数 */
-	int		carTimeSec;		/* 车辆时间 */
+	int		carCycleCnt;	                        /* 车辆圈数 */
+	int		carTimeSec;		                        /* 车辆时间 */
 
-	int		carCurState;	/* 车辆状态 */
+	int		carCurState;	                        /* 车辆状态 */
 
-	int		carOnline;		/* 在线状态 */
+	int		carOnline;		                        /* 在线状态 */
+    
+    int     carCycleSpeed[MAX_CYCLE_FORSPEED];      /* 车辆圈速 */
 }CarInfo;
 
 typedef struct SystemDef
@@ -34,6 +38,7 @@ typedef struct SystemDef
 	int		carCacType;		/* 赛道计量方式 */
 	int		carMaxCycle;	/* 赛道最大圈数 */
 	int		carMaxTime;		/* 赛道最大时长 */
+    int     carSpeedAdj;    /* 圈速修正时间 */
 }SystemDef;
 
 #endif
