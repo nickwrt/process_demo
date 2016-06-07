@@ -717,9 +717,12 @@ void CProcess_demoDlg::OnTimer(UINT nIDEvent)
 				{
 					if(m_gCarInfo[i].carOnline == 0 && m_RfidInfo[i].curtick > m_RfidInfo[i].lasttick)
 					{
-						m_gCarInfo[i].carOnline = 1;
-
-						m_gCarInfo[i].carCycleCnt ++; /* 计圈加一 */
+						m_gCarInfo[i].carOnline = 1;						
+                        
+                        if(m_RfidInfo[i].lasttick > 0)
+                        {
+                            m_gCarInfo[i].carCycleCnt ++; /* 计圈加一 */
+                        }
 					}
 					else
 					{
